@@ -112,6 +112,7 @@ while closeall != True:
     missilefired = False
     wait2 = 0
     score = 0
+    missile = None
     players = [player, bomber]
     bullets = []
     clock = time.Clock()
@@ -148,8 +149,11 @@ while closeall != True:
             if i.type == QUIT:
                 close = True
                 closeall = True
+            if i.type == KEYDOWN:
+                if i.key == K_1:
+                    close = True
         if closeall:
             close = True
-        showscore()
+        w.blit(font.SysFont('Arial', 30).render('score: ' + str(score) + (" (1-try again)"), True, (0, 0, 0)), (50, 130))
         display.update()
         clock.tick(60)
