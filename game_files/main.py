@@ -56,6 +56,7 @@ def fighterlock():
     global missileready
     global missile
     global missilefired
+    global missile_img
     if ((player.rect.y - bomber.rect.y) < 200) and ((player.rect.y - bomber.rect.y) > (-200)):
         lock += 1
     elif lock < 255:
@@ -64,7 +65,8 @@ def fighterlock():
         missileready = True
     if missileready:
         if keys[K_SPACE]:
-            missile = rect.Rect(200, bomber.rect.y, 50, 20)
+            missile = rect.Rect(200, bomber.rect.y, 50, 25)
+            missile_img = transform.scale(image.load('missile.png'), (50, 25))
             missilefired = True 
             lock = 0
             missileready = False
@@ -74,6 +76,7 @@ def movemissile():
     global missilefired
     global close
     global score
+    global missile_img
     try:
         if missilefired:
             missile.x += 10
@@ -81,7 +84,8 @@ def movemissile():
         if missile.colliderect(bomber.rect):
             score += 1
             missile = None
-        draw.rect(w, (255, 0, 0), missile)
+            missile_img = None
+        w.blit(missile_img, (missile.x, missile.y))
     except:
         pass
 
@@ -105,7 +109,7 @@ while closeall != True:
     w = display.set_mode((1500, 750))
     display.set_caption('dogfight')
     player = Player(100, 100, 90, 50, (0, 255, 0), 'fighter_img.png')
-    bomber = Player(1100, 500, 150, 100, (255, 0, 0), 'bomber_img.jpg')
+    bomber = Player(1100, 500, 140, 100, (255, 0, 0), 'bomber_img.jpg')
     playerhitpoints = 100
     lock = 0
     missileready = False
@@ -113,6 +117,7 @@ while closeall != True:
     wait2 = 0
     score = 0
     missile = None
+    missile_img = None
     players = [player, bomber]
     bullets = []
     clock = time.Clock()
