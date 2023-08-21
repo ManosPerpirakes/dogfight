@@ -42,6 +42,11 @@ def shoot_bomber():
         if i.colliderect(player.rect):
             playerhitpoints -= 5
 
+def draw_bullets():
+    for i in bullets:
+        draw.rect(w, (0, 0, 0), i)
+
+
 def showhitpoints():
     w.blit(font.SysFont('Arial', 30).render('hitpoints: ' + str(playerhitpoints), True, (0, 0, 0)), (50, 50))
 
@@ -89,8 +94,19 @@ def movemissile():
     except:
         pass
 
+def show_missile():
+    try:
+        w.blit(missile_img, (missile.x, missile.y))
+    except:
+        pass
+
+def calclock():
+    global wait2
+    wait2 += 1
+    if wait2 == 120:
+        wait2 = 0
+
 def showlock():
-    global lock
     global wait2
     w.blit(font.SysFont('Arial', 30).render('lock: ', True, (0, 0, 0)), (50, 90))
     if lock < 255:
@@ -104,6 +120,20 @@ def showscore():
     global score
     w.blit(font.SysFont('Arial', 30).render('score: ' + str(score), True, (0, 0, 0)), (50, 130))
 
+def pause():
+    global keys
+    global pausevar
+    global pausewait
+    pausewait += 1
+    if pausewait > 29:
+        if keys[K_1]:
+            if pausevar:
+                pausevar = False
+                pausewait = 0
+            else:
+                pausevar = True
+                pausewait = 0
+
 closeall = False
 while closeall != True:
     w = display.set_mode((1500, 750))
@@ -114,19 +144,18 @@ while closeall != True:
     lock = 0
     missileready = False
     missilefired = False
+    pausevar = False
     wait2 = 0
     score = 0
     missile = None
     missile_img = None
     players = [player, bomber]
     bullets = []
+    pausewait = 0
     clock = time.Clock()
     wait = 0
     close = False
     while close != True:
-        wait2 += 1
-        if wait2 == 120:
-            wait2 = 0
         keys = key.get_pressed()
         w.fill((255, 255, 255))
         for i in event.get():
@@ -135,16 +164,21 @@ while closeall != True:
                 closeall = True
         if closeall:
             close = True
-        move_player()
-        move_bomber()
-        shoot_bomber()
-        movemissile()
+        pause()
+        if not pausevar:
+            move_player()
+            move_bomber()
+            shoot_bomber()
+            movemissile()
+            checklose()
+            fighterlock()
+            calclock()
         display_players()
-        checklose()
-        showhitpoints()
+        draw_bullets()
+        show_missile()
         showlock()
         showscore()
-        fighterlock()
+        showhitpoints()
         display.update()
         clock.tick(60)
     close = False
