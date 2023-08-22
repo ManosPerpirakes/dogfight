@@ -22,7 +22,7 @@ def move_bomber():
     global wait
     if wait == 10:
         yadd = randint(-50, 50)
-        if (yadd > 0 and (bomber.rect.y < (650 - yadd))) or (yadd < 0 and (bomber.rect.y > (50 + yadd))):
+        if (yadd > 0 and (bomber.rect.y < (700 - yadd))) or (yadd < 0 and (bomber.rect.y > ((-(yadd)) - 50))):
             bomber.rect.y += yadd
         wait = 0
     else:
