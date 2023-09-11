@@ -45,7 +45,8 @@ def shoot_bomber():
 def draw_bullets():
     for i in bullets:
         draw.rect(w, (0, 0, 0), i)
-
+        if i.x < -20:
+            bullets.remove(i)
 
 def showhitpoints():
     w.blit(font.SysFont('Arial', 30).render('hitpoints: ' + str(playerhitpoints), True, (0, 0, 0)), (50, 50))
