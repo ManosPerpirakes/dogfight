@@ -3,12 +3,10 @@ from random import *
 font.init()
 
 class Player():
-    def __init__(self, x, y, w, h, colour, imgname):
+    def __init__(self, x, y, w, h, imgname):
         self.rect = rect.Rect(x, y, w, h)
-        self.colour = colour
         self.img = transform.scale(image.load(imgname), (w, h))
     def showplayer(self):
-        draw.rect(w, self.colour, self.rect)
         w.blit(self.img, (self.rect.x, self.rect.y))
 
 def move_player():
@@ -71,8 +69,7 @@ def fighterlock():
         missileready = True
     if missileready:
         if keys[K_SPACE]:
-            missile = rect.Rect(200, bomber.rect.y, 50, 25)
-            missile_img = transform.scale(image.load('missile.png'), (50, 25))
+            missile = Player(200, bomber.rect.y, 50, 25, "missile.png")
             missilefired = True 
             lock = 0
             missileready = False
@@ -85,19 +82,12 @@ def movemissile():
     global missile_img
     try:
         if missilefired:
-            missile.x += 10
-            missile.y = bomber.rect.y
-        if missile.colliderect(bomber.rect):
+            missile.rect.x += 10
+            missile.rect.y = bomber.rect.y
+        if missile.rect.colliderect(bomber.rect):
             score += 1
             missile = None
-            missile_img = None
-        w.blit(missile_img, (missile.x, missile.y))
-    except:
-        pass
-
-def show_missile():
-    try:
-        w.blit(missile_img, (missile.x, missile.y))
+        missile.showplayer()
     except:
         pass
 
@@ -139,8 +129,8 @@ closeall = False
 while closeall != True:
     w = display.set_mode((1500, 750))
     display.set_caption('dogfight')
-    player = Player(100, 100, 90, 50, (0, 255, 0), 'fighter_img.png')
-    bomber = Player(1100, 500, 140, 100, (255, 0, 0), 'bomber_img.jpg')
+    player = Player(100, 100, 90, 50, 'fighter_img.png')
+    bomber = Player(1100, 500, 140, 100, 'bomber_img.jpg')
     playerhitpoints = 100
     lock = 0
     missileready = False
@@ -176,7 +166,6 @@ while closeall != True:
             calclock()
         display_players()
         draw_bullets()
-        show_missile()
         showlock()
         showscore()
         showhitpoints()
