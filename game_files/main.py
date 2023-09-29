@@ -60,7 +60,6 @@ def fighterlock():
     global missileready
     global missile
     global missilefired
-    global missile_img
     if ((player.rect.y - bomber.rect.y) < 200) and ((player.rect.y - bomber.rect.y) > (-200)):
         lock += 1
     elif lock < 255:
@@ -79,7 +78,6 @@ def movemissile():
     global missilefired
     global close
     global score
-    global missile_img
     try:
         if missilefired:
             missile.rect.x += 10
@@ -139,7 +137,6 @@ while closeall != True:
     wait2 = 0
     score = 0
     missile = None
-    missile_img = None
     players = [player, bomber]
     bullets = []
     pausewait = 0
