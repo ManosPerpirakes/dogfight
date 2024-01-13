@@ -9,6 +9,27 @@ class Player():
     def showplayer(self):
         w.blit(self.img, (self.rect.x, self.rect.y))
 
+class Rocket():
+    def __init__(self, x, y, w, h, imgname):
+        self.rect = rect.Rect(x, y, w, h)
+        self.img = transform.scale(image.load(imgname), (w, h))
+    def move(self):
+        global playerhitpoints
+        self.rect.x -= 8
+        if player.rect.y > self.rect.y:
+            self.rect.y += 1.5
+        if player.rect.y < self.rect.y:
+            self.rect.y -= 1.5
+        if self.rect.colliderect(player.rect):
+            self.rect.x = 1500
+            self.rect.y = 750/2
+            playerhitpoints -= 20
+        if self.rect.x < -50:
+            self.rect.x = 1500
+            self.rect.y = 750/2
+    def show(self):
+        w.blit(self.img, (self.rect.x, self.rect.y))
+
 def move_player():
     global keys
     if (keys[K_w] or keys[K_UP]) and player.rect.y > 0:
@@ -18,7 +39,7 @@ def move_player():
 
 def move_bomber():
     global wait
-    if wait == 10:
+    if wait == 5:
         yadd = randint(-50, 50)
         if (yadd > 0 and (bomber.rect.y < (700 - yadd))) or (yadd < 0 and (bomber.rect.y > ((-(yadd)) - 50))):
             bomber.rect.y += yadd
@@ -33,12 +54,12 @@ def display_players():
 def shoot_bomber():
     global playerhitpoints
     if wait == 0:
-        bullets.append(rect.Rect(1050, (bomber.rect.y + 50), 20, 5))
+        bullets.append(rect.Rect(1050, (bomber.rect.y + 50), 10, 2))
     for i in bullets:
         i.x -= 50
         draw.rect(w, (0, 0, 0), i)
         if i.colliderect(player.rect):
-            playerhitpoints -= 5
+            playerhitpoints -= 0.5
 
 def draw_bullets():
     for i in bullets:
@@ -47,7 +68,7 @@ def draw_bullets():
             bullets.remove(i)
 
 def showhitpoints():
-    w.blit(font.SysFont('Arial', 30).render('hitpoints: ' + str(playerhitpoints), True, (0, 0, 0)), (50, 50))
+    w.blit(font.SysFont('Arial', 30).render('hitpoints: ' + str(round(playerhitpoints)), True, (0, 0, 0)), (50, 50))
 
 def checklose():
     global close
@@ -68,7 +89,7 @@ def fighterlock():
         missileready = True
     if missileready:
         if keys[K_SPACE]:
-            missile = Player(200, bomber.rect.y, 50, 25, "missile.png")
+            missile = Player(200, player.rect.y + 70, 50, 25, "missile.png")
             missilefired = True 
             lock = 0
             missileready = False
@@ -81,9 +102,14 @@ def movemissile():
     try:
         if missilefired:
             missile.rect.x += 10
-            missile.rect.y = bomber.rect.y
+        if bomber.rect.y > missile.rect.y:
+            missile.rect.y += 2
+        if bomber.rect.y < missile.rect.y:
+            missile.rect.y -= 2
         if missile.rect.colliderect(bomber.rect):
             score += 1
+            missile = None
+        if missile.rect.x > 1600:
             missile = None
         missile.showplayer()
     except:
@@ -127,8 +153,9 @@ closeall = False
 while closeall != True:
     w = display.set_mode((1500, 750))
     display.set_caption('dogfight')
-    player = Player(100, 100, 90, 50, 'fighter_img.png')
-    bomber = Player(1100, 500, 140, 100, 'bomber_img.jpg')
+    player = Player(100, 300, 150, 35, 'fighter_img.png')
+    bomber = Player(1100, 500, 300, 104, 'bomber_img.jpg')
+    rocket = Rocket(1500, 750/2, 50, 25, "missile2.png")
     playerhitpoints = 100
     lock = 0
     missileready = False
@@ -144,6 +171,9 @@ while closeall != True:
     wait = 0
     close = False
     while close != True:
+        if playerhitpoints < 1:
+            playerhitpoints = 0
+        fps = int(clock.get_fps())
         keys = key.get_pressed()
         w.fill((255, 255, 255))
         for i in event.get():
@@ -161,15 +191,19 @@ while closeall != True:
             checklose()
             fighterlock()
             calclock()
+            rocket.move()
+        rocket.show()
         display_players()
         draw_bullets()
         showlock()
         showscore()
         showhitpoints()
+        w.blit(font.SysFont('Arial', 30).render("FPS: " + str(fps), True, (0, 0, 0)), (50, 180))
         display.update()
         clock.tick(60)
     close = False
     while close != True:
+        fps = int(clock.get_fps())
         w.fill((255, 255, 255))
         for i in event.get():
             if i.type == QUIT:
@@ -181,5 +215,6 @@ while closeall != True:
         if closeall:
             close = True
         w.blit(font.SysFont('Arial', 30).render('score: ' + str(score) + (" (1-try again)"), True, (0, 0, 0)), (50, 130))
+        w.blit(font.SysFont('Arial', 30).render("FPS: " + str(fps), True, (0, 0, 0)), (50, 180))
         display.update()
         clock.tick(60)
