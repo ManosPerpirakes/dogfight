@@ -17,9 +17,9 @@ class Rocket():
         global playerhitpoints
         self.rect.x -= 8
         if player.rect.y > self.rect.y:
-            self.rect.y += 1.5
+            self.rect.y += 1
         if player.rect.y < self.rect.y:
-            self.rect.y -= 1.5
+            self.rect.y -= 1
         if self.rect.colliderect(player.rect):
             self.rect.x = 1500
             self.rect.y = 750/2
